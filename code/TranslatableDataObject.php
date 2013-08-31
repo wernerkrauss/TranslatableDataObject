@@ -152,7 +152,8 @@ class TranslatableDataObject extends DataExtension {
 	 * @return string
 	 */
 	public function get_basename($field) {
-		return reset(explode("__", $field));
+		$parts = explode("__", $field);
+		return reset($parts);
 	}
 
 
@@ -201,7 +202,7 @@ class TranslatableDataObject extends DataExtension {
 	 *
 	 * @param string $class The class that is being decorated
 	 */
-	public function extraStatics($class = null, $extension = null) {		
+	static  function get_extra_config($class, $extension, $args) {
 		return array (
 			'db' => self::$translation_manifest[$class]		
 		);
@@ -256,7 +257,19 @@ class TranslatableDataObject extends DataExtension {
 		}
 		return $fields;
 	}
-	
-		
+
+
+	public function createTabsForLanguages($fields) {
+		foreach (self::$langs as $lang) {
+			/**
+			 * @todo: works with EN, make work with en_GB
+			 */
+			$languageName = i18n::get_language_name(strtolower($lang));
+				foreach($this->getTranslationFields(null, $lang) as $field) {
+						$fields->addFieldToTab("Root." . $languageName, $field);
+				}
+		}
+		return $fields;
+	}
 }
 
